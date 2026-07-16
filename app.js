@@ -17,12 +17,15 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'RP738964$',
-    database: 'c237_supermarketdb'
-  });
+const db = mysql.createConnection({
+    host: 'c237-adib-mysql.mysql.database.azure.com',
+    user: 'c237_026',
+    password: 'c237026@2026!',
+    database: 'C237_026_team1_userdb',
+    ssl: {
+        rejectUnauthorized: true
+    }
+});
 
 connection.connect((err) => {
     if (err) {
