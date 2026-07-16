@@ -21,13 +21,13 @@ const db = mysql.createConnection({
     host: 'c237-adib-mysql.mysql.database.azure.com',
     user: 'c237_026',
     password: 'c237026@2026!',
-    database: 'C237_026_team1_userdb',
+    database: 'C237_026_team4_userdb',
     ssl: {
         rejectUnauthorized: true
     }
 });
 
-connection.connect((err) => {
+db.connect((err) => {
     if (err) {
         console.error('Error connecting to MySQL:', err);
         return;
