@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-const db = mysql.createConnection({
+const db = mysql.createdb({
     host: 'c237-adib-mysql.mysql.database.azure.com',
     user: 'c237_026',
     password: 'c237026@2026!',
@@ -98,7 +98,7 @@ app.get('/',  (req, res) => {
 
 app.get('/inventory', checkAuthenticated, checkAdmin, (req, res) => {
     // Fetch data from MySQL
-    connection.query('SELECT * FROM products', (error, results) => {
+    db.query('SELECT * FROM products', (error, results) => {
       if (error) throw error;
       res.render('inventory', { products: results, user: req.session.user });
     });
@@ -113,7 +113,7 @@ app.post('/register', validateRegistration, (req, res) => {
     const { username, email, password, address, contact, role } = req.body;
 
     const sql = 'INSERT INTO users (username, email, password, address, contact, role) VALUES (?, ?, SHA1(?), ?, ?, ?)';
-    connection.query(sql, [username, email, password, address, contact, role], (err, result) => {
+    db.query(sql, [username, email, password, address, contact, role], (err, result) => {
         if (err) {
             throw err;
         }
@@ -137,7 +137,7 @@ app.post('/login', (req, res) => {
     }
 
     const sql = 'SELECT * FROM users WHERE email = ? AND password = SHA1(?)';
-    connection.query(sql, [email, password], (err, results) => {
+    db.query(sql, [email, password], (err, results) => {
         if (err) {
             throw err;
         }
@@ -160,7 +160,7 @@ app.post('/login', (req, res) => {
 
 app.get('/shopping', checkAuthenticated, (req, res) => {
     // Fetch data from MySQL
-    connection.query('SELECT * FROM products', (error, results) => {
+    db.query('SELECT * FROM products', (error, results) => {
         if (error) throw error;
         res.render('shopping', { user: req.session.user, products: results });
       });
@@ -170,7 +170,7 @@ app.post('/add-to-cart/:id', checkAuthenticated, (req, res) => {
     const productId = parseInt(req.params.id);
     const quantity = parseInt(req.body.quantity) || 1;
 
-    connection.query('SELECT * FROM products WHERE productId = ?', [productId], (error, results) => {
+    db.query('SELECT * FROM products WHERE productId = ?', [productId], (error, results) => {
         if (error) throw error;
 
         if (results.length > 0) {
@@ -217,7 +217,7 @@ app.get('/product/:id', checkAuthenticated, (req, res) => {
   const productId = req.params.id;
 
   // Fetch data from MySQL based on the product ID
-  connection.query('SELECT * FROM products WHERE productId = ?', [productId], (error, results) => {
+  db.query('SELECT * FROM products WHERE productId = ?', [productId], (error, results) => {
       if (error) throw error;
 
       // Check if any product with the given ID was found
@@ -247,7 +247,7 @@ app.post('/addProduct', upload.single('image'),  (req, res) => {
 
     const sql = 'INSERT INTO products (productName, quantity, price, image) VALUES (?, ?, ?, ?)';
     // Insert the new product into the database
-    connection.query(sql , [name, quantity, price, image], (error, results) => {
+    db.query(sql , [name, quantity, price, image], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
             console.error("Error adding product:", error);
@@ -264,7 +264,7 @@ app.get('/updateProduct/:id',checkAuthenticated, checkAdmin, (req,res) => {
     const sql = 'SELECT * FROM products WHERE productId = ?';
 
     // Fetch data from MySQL based on the product ID
-    connection.query(sql , [productId], (error, results) => {
+    db.query(sql , [productId], (error, results) => {
         if (error) throw error;
 
         // Check if any product with the given ID was found
@@ -289,7 +289,7 @@ app.post('/updateProduct/:id', upload.single('image'), (req, res) => {
 
     const sql = 'UPDATE products SET productName = ? , quantity = ?, price = ?, image =? WHERE productId = ?';
     // Insert the new product into the database
-    connection.query(sql, [name, quantity, price, image, productId], (error, results) => {
+    db.query(sql, [name, quantity, price, image, productId], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
             console.error("Error updating product:", error);
@@ -304,7 +304,7 @@ app.post('/updateProduct/:id', upload.single('image'), (req, res) => {
 app.get('/deleteProduct/:id', (req, res) => {
     const productId = req.params.id;
 
-    connection.query('DELETE FROM products WHERE productId = ?', [productId], (error, results) => {
+    db.query('DELETE FROM products WHERE productId = ?', [productId], (error, results) => {
         if (error) {
             // Handle any error that occurs during the database operation
             console.error("Error deleting product:", error);
